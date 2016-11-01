@@ -6,9 +6,9 @@ Iron Star is the online multiplayer space brawler. Arena style maps create a com
 full of danger and ways to surprise your enemy! With a variety of ways to customize your ship,
 you'll find new ways to play, new ways to win.
 
-**Challenge** up to 4 friends in an allout space battle for galactic supremacy.
-**Customize** your ship with unique abilities. Take them by surprise!
-**Win** yourself some gloating rights in some classic game modes, as well as some new ones.
+**Challenge** up to 4 friends in an allout space battle for galactic supremacy.<br>
+**Customize** your ship with unique abilities. Take them by surprise!<br>
+**Win** yourself some gloating rights in some classic game modes, as well as some new ones.<br>
 
 - Free-for-all
 - Capture the flag
@@ -16,17 +16,17 @@ you'll find new ways to play, new ways to win.
 
 Come on in, Iron Star Arena is always ready for you.
 
-### How to play:
+## How to play:
 
-**Controls:**
-  Up: Engage thrusters
-  Left & Right: Turn your ship
-  A: Fire your Primary weapons
-  S: Engage your secondary ability
-  D: Fire your afterburners
-  Esc: Open the menu
+**Controls:**<br>
+  Up: Engage thrusters<br>
+  Left & Right: Turn your ship<br>
+  A: Fire your Primary weapons<br>
+  S: Engage your secondary ability<br>
+  D: Fire your afterburners<br>
+  Esc: Open the menu<br>
 
-#### Installation:
+## Installation:
 
 You must have Love2D installed from [love2d.org](http://love2d.org)
 
@@ -39,7 +39,7 @@ Windows users:
 
 Linux users:
 
-  Pretty similar to Windows.
-  Install Love2D from your repos if you can. Unpack the zip file.
-  In a terminal, run `love` with the unzipped folder as the argument.
-  If you're on linux you'll probably figure it out.
+  Pretty similar to Windows.<br>
+  Install Love2D from your repos if you can. Unpack the zip file.  
+  In a terminal, run `love` with the unzipped folder as the argument.  
+  If you're on linux you'll probably figure it out.  

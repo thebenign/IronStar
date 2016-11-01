@@ -1,5 +1,7 @@
-NOTICE: This game is currently under active, heavy development.  It is in no way complete or indeed even functional at this point.  
-Please run at your own risk as most code is unstable and at best will crash whenever it wants.  The spaghetti code is strong.
+**NOTICE: This game is currently under active, heavy development.  
+It is in no way complete or indeed even functional at this point.  
+Please run at your own risk as most code is unstable and at best will crash whenever it wants.  
+The spaghetti code is strong.**
 
 # Iron Star
 A fast-paced space-battle arcade brawl!

@@ -5,14 +5,23 @@ vector.__index = vector
 
 function vector.new(x, y)
     local t = setmetatable({}, vector)
-    t.x = x
-    t.y = y
+    t.changed = false
+    t.x = x or 0
+    t.y = y or 0
     t.mag = 0
     t.dir = 0
     t.f = 0
     t.max = 6
     return t
 end
+
+function vector:flag() -- flags the vector as changed, useful for network code
+    self.changed = true
+end
+function vector:unflag()
+    self.changed = false
+end
+
 
 function vector:add(vec)
     local dir1, mag1 = self.dir, self.mag
@@ -38,15 +47,20 @@ function vector:addFriction()
 end
 
 function vector:step(...)
-    local args = {...}
-    local m = args[1] or self.mag
-    self.x = self.x + math.cos(self.dir)*m
-    self.y = self.y + math.sin(self.dir)*m
+    local mag, dir = ...
+    mag, dir = (mag or self.mag), (dir or self.dir)
+    
+    self.x = self.x + math.cos(dir)*mag
+    self.y = self.y + math.sin(dir)*mag
 
 end
 
-function vector:getVecToPoint()
-    
+function vector:magToPoint(x, y)
+    return math.sqrt((self.y-y)^2 + (self.x-x)^2)
+end
+
+function vector:dirToPoint(x,y)
+    return math.atan2(y - self.y, x - self.x)
 end
 
 return vector

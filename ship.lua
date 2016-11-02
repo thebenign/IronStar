@@ -3,6 +3,7 @@ local ship = {}
 ship.img = lg.newImage("/img/g5613.png")
 
 ship.vec = vector(500, 500)
+ship.vec:flag()
 
 ship.vec.f = .1
 ship.vec.max = 9
@@ -12,10 +13,11 @@ ship.speed = .5
 ship.can_shoot = true
 ship.thrust = 0
 
+
 ship.colliding = false
 ship.circle = geometry.newCircle(ship.vec.x, ship.vec.y, 28)--collision circle
 
-ship.bullet_timer = timer.new(7, false)
+ship.bullet_timer = timer.new(40, false)
 
 ship.bullet_timer.call = function(self)
     ship.can_shoot = true
@@ -33,7 +35,7 @@ ship.part = particle.new(ship.vec.x, ship.vec.y)
     ship.part:setMaxSpeed(1)
     ship.part:setMinSpeed(0)
     ship.part:setSpread(0)
-    ship.part:setLifeTime(60)
+    ship.part:setLifeTime(20)
     ship.part:setEmitterDelta(0)
     ship.part:setRate(6)
     ship.part:setAccelSpeed(0)
@@ -47,6 +49,14 @@ function ship.update()
         local vec = {x = ship.vec.x, y = ship.vec.y, dir = ship.part.a, mag = 22}
         vector.step(vec)
         
+        if ship.vec.mag ~= 0 then
+            ship.vec:flag()
+        else
+            ship.vec:unflag()
+        end
+        
+        ship.vec:step()
+        
         ship.part.x = vec.x
         ship.part.y = vec.y
         ship.part.a = math.rad(ship.dir)-math.pi
@@ -58,6 +68,13 @@ end
 
 function ship.draw()
     lg.draw(ship.img, ship.vec.x-camera.x, ship.vec.y-camera.y, math.rad(ship.dir), 1, 1, 32, 31)
+    local x = ship.vec.x + math.cos(math.rad(ship.dir))*100
+    local y = ship.vec.y + math.sin(math.rad(ship.dir))*100
+    lg.setLineWidth(1)
+    lg.setColor(255,255,255,100)
+    lg.setBlendMode("add")
+    lg.circle("line", x-camera.x, y-camera.y, 8,5)
+    lg.setBlendMode("alpha")
 end
     
 return ship

@@ -22,8 +22,10 @@ local keyhandle = function()
     if love.keyboard.isDown("a") then
         if ship.can_shoot then
             bullet.new(ship.vec, math.rad(ship.dir))
-            sfx.bullet:play()
-            sfx.bullet:rewind()
+            
+            local pew = sfx.bullet:play()
+            pew:setPitch(.8 + math.random()*.4)
+            
             ship.bullet_timer:start()
             ship.can_shoot = false
         end

@@ -1,3 +1,4 @@
+require "slam"
 sock = require "sock"
 
 DEVMODE = false
@@ -5,7 +6,12 @@ DEVMODE = false
 function love.load(arg)
     if arg[#arg] == "-debug" then require("mobdebug").start() end
     
-    -- GLOBALS
+    
+    local x, y = love.window.getDesktopDimensions()
+    
+    love.window.setMode(x, y, {resizable=true})
+    love.window.maximize()
+        -- GLOBALS
     lg = love.graphics
     
     -- Set up the screen environment
@@ -62,7 +68,7 @@ function love.load(arg)
         world.r = (world.w/2)
         world.name = "Scout"
         world.small_font = love.graphics.newFont(12)
-        world.ip_input = {text = "192.168.1.10"}
+        world.ip_input = {text = "localhost"}
         world.port_input = {text = "22122"}
     
     step_timer = {
@@ -74,8 +80,8 @@ function love.load(arg)
     
     
     window = {}
-        window.w = 1280
-        window.h = 720
+        window.w = 800
+        window.h = 700
         
     star.pop()
     
@@ -96,7 +102,8 @@ function love.update(dt)
             local step_timer_start = love.timer.getTime()
         keyhandle()
         collision.mapCheck(main_map, ship.circle)
-        ship.vec:step()
+        
+        
         ship.update()
         
         bullet.update()
@@ -157,6 +164,14 @@ function love.draw()
     lg.rectangle("line", 0-camera.x, 0-camera.y, world.w, world.h)
     lg.setColor(255,255,255)
     
+    if net.server.state then
+        net.serverDrawOthers()
+    end
+    if net.client.state then
+        net.clientDrawOthers()
+    end
+    
+    
     ship.part:draw()
     bullet.draw()
     ship.draw()
@@ -175,11 +190,16 @@ function love.draw()
     love.graphics.print(love.timer.getFPS(), 0,0)
     if step_timer.result*1000 > 16.66 then love.graphics.setColor(255,20,20) end
     love.graphics.print("Logic step ms: "..string.format("%.4f",(step_timer.result or 0)*1000), 0, love.graphics.getHeight()-32)
+    camera.draw()
 end
 
 function love.resize(w, h)
-    window.w = w
-    window.h = h
+    local x, y = love.graphics.getDimensions()
+    print(x, y)
+    love.window.setMode(x,y,{x=0,y=0,vsync=true})
+    
+    window.w, window.h = x, y
+    
 end
 
 function HSL(h, s, l, a)

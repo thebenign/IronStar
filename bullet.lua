@@ -10,8 +10,8 @@ bullet.obj = {}
 function bullet.new(vec, dir)
     local b = setmetatable({}, bullet)
     b.vec = vector(vec.x, vec.y)
-    b.vec.dir = dir
-    b.vec.mag = 8+vec.mag
+    b.vec.dir = dir--+math.rad(math.random()*80-40)
+    b.vec.mag = 8+vec.mag/2
     b.vec:step(20)
     
     b.part = particle.new(0, 0)
@@ -19,17 +19,18 @@ function bullet.new(vec, dir)
     b.part.h = 120
     b.part.sat = 255
     b.part.l = 180
-    b.part:setColor(HSL(b.part.h,b.part.sat,b.part.l,200))
+    
     b.part:setSpread(10)
     b.part:setLifeTime(10)
     b.part:setEmitterDelta(0)
     b.part:setRate(3)
     b.part:setAccelSpeed(0)
-    b.part:setMaxSpeed(4)
+    b.part:setMaxSpeed(1)
     
     b.part.run = true
     b.part:setAngle(dir)
     
+    b.part:setColor(HSL(b.part.h,b.part.sat,b.part.l,255))
     b.kill = false
     
     b.timer = timer.new(200, false)
@@ -51,6 +52,7 @@ function bullet.update()
         
         b.part.x = b.vec.x
         b.part.y = b.vec.y
+        --b.part.a = b.vec.dir
             b.part:update()
 
         if b.kill then

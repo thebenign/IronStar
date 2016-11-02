@@ -67,7 +67,7 @@ function gui.play_menu()
         server_text = "Start server"
     end
     
-    gui.server.layout:reset(1048,32, 4)
+    gui.server.layout:reset(love.graphics.getWidth()-232,32, 4)
     if gui.server:Button(server_text, {font=world.small_font}, gui.server.layout:row(200, 30)).hit then
         if net.server.state then
             net.stopServer()

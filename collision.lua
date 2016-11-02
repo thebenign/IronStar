@@ -22,7 +22,7 @@ end
 function collision.circleRect2(circle, rect)
     --intersectPoint: (point) ->
     local dir = math.atan2(circle.y-(rect.y+rect.h/2), circle.x-(rect.x+rect.w/2))
-    point = {x=circle.x-math.cos(dir)*circle.r, y=circle.y-math.sin(dir)*circle.r}
+    local point = {x=circle.x-math.cos(dir)*circle.r, y=circle.y-math.sin(dir)*circle.r}
     local dx = point.x - (rect.x + rect.w/2)
     local px = (rect.w/2) - math.abs(dx)
     if px <=0 then
@@ -74,10 +74,10 @@ function collision.mapCheck(map, circle)
     local h_tiles, v_tiles = map.width, map.height
     local hit
     local rect
-    for y = 0, v_tiles do
+    for y = 0, v_tiles do  -- loop through every tile. (fix with collidoscope)
         for x = 0, h_tiles do
-            if map.data[y*map.width+x+1] and map.data[y*map.width+x+1] > 0 then
-                rect = {x=x*map.tile_width,y=y*map.tile_height,w=map.tile_width,h=map.tile_height}
+            if map.data[y*map.width+x+1] and map.data[y*map.width+x+1] > 0 then  -- if there's a tile there and it's not a zero tile
+                rect = {x=x*map.tile_width,y=y*map.tile_height,w=map.tile_width,h=map.tile_height}  --make a rectangle out of it
 
                 hit = collision.circleRect2(circle, rect)
                 if hit then
@@ -91,10 +91,7 @@ function collision.mapCheck(map, circle)
                         local norm = math.rad(hit.normal.y * 90)
                         ship.vec.dir = 2 * norm - math.pi - ship.vec.dir
                     end
-                    ship.colliding = {255,0,0,255}
                     ship.vec.mag = ship.vec.mag*.75
-                else
-                    ship.colliding = {255,255,255,255}
                 end
                 
             end

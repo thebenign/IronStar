@@ -157,7 +157,7 @@ function server.drawOthers()
     for i, client in ipairs(server.clients) do
         pdata = client.player_data
         if client.connected then
-            love.graphics.draw(ship.img, pdata.vec.x-camera.x, pdata.vec.y-camera.y, math.rad(pdata.dir), 1, 1, 32, 31)
+            love.graphics.draw(ship.img, pdata.vec.x-camera.x, pdata.vec.y-camera.y, math.rad(pdata.dir), .3, .3, 145, 163)
         end
     end
 end

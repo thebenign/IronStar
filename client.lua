@@ -111,7 +111,7 @@ function client.drawOthers()
     
     for i, v in pairs(client.clients) do
         other = v
-        love.graphics.draw(ship.img, other.vec.x-camera.x, other.vec.y-camera.y, math.rad(other.dir), 1, 1, 32, 31)
+        love.graphics.draw(ship.img, other.vec.x-camera.x, other.vec.y-camera.y, math.rad(other.dir), .3, .3, 145, 163)
     end
 end
 

@@ -4,10 +4,11 @@ local keyhandle = function()
     if love.keyboard.isDown("up") then
         ship.vec:add({dir = math.rad(ship.dir), mag = ship.speed})
         ship.part.run = true
+        ship.part2.run = true
         sfx.engine:setVolume(.7)
         ship.thrust = 1
     else
-        ship.part.run = false
+        --ship.part.run = false
         sfx.engine:setVolume(0)
         ship.thrust = 0
     end

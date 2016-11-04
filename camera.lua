@@ -2,7 +2,7 @@ local camera = {
     x = 0,
     y = 0,
     rolloff = .6,
-    follow_distance = 0,
+    follow_distance = 32,
     
     vec = vector()
     }

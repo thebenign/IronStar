@@ -1,7 +1,79 @@
 --network rewrite with sock
 
 local net = {}
+net.__index = net
 
+net.server = setmetatable(require("server"), net)
+net.client = setmetatable(require("client"), net)
+
+
+net.metric = {}
+    -- Set our data transmission rate in packets per second.
+    net.metric.t = 1/30
+    net.metric.dt = 0
+
+
+-- HELPERS
+function net:buildPlayerPacket()
+    -- Build a data packet to send out. Compare real data to a client copy to see if it needs to be sent to the server.
+    -- Tables are a special case and must contain a ".changed" key with a boolean value. Flip this when data should be sent.
+    local data = {}
+    local vec = net.compareData(ship.vec, nil) -- This is a table, it doesn't compare to a client copy.
+    local dir = net.compareData(ship.dir, self.local_data.dir)
+    local thrust = net.compareData(ship.thrust, self.local_data.thrust)
+
+    if vec then
+        data.vec = vec
+    end
+
+    if dir then
+        data.dir = dir
+        self.local_data.dir = dir
+    end
+    if thrust then
+        data.thrust = thrust
+        self.local_data.thrust = thrust
+    end
+    
+    return data
+end
+
+function net.compareData(d1, d2)
+    if type(d1) == "table" then
+        return d1.changed and d1 or false
+    end
+    
+    return (d1 ~= d2) and d1
+end
+
+
+function net.isIP(ip)
+    if not ip or type(ip) ~= "string" then return false end
+    local a,b,c,d=ip:match("^(%d%d?%d?)%.(%d%d?%d?)%.(%d%d?%d?)%.(%d%d?%d?)$")
+    a=tonumber(a)
+    b=tonumber(b)
+    c=tonumber(c)
+    d=tonumber(d)
+    if not a or not b or not c or not d then return false end
+    if a<0 or 255<a then return false end
+    if b<0 or 255<b then return false end
+    if c<0 or 255<c then return false end
+    if d<0 or 255<d then return false end
+    return true
+end
+
+function net.isPort(port)
+    if port < 49152 or port > 65535 then
+        print("Port "..port.." is out of range (49152-65536)\nWill not bind host. Try a different port number.")
+        return false
+    end
+    return true
+end
+
+return net
+
+
+--[[
 net.__index = net
 
 net.client = setmetatable({}, net)
@@ -22,11 +94,7 @@ net.server = setmetatable({}, net)
     net.server.player_data = {}
     
     
-net.metric = {}
-    -- Set our data transmission rate in packets per second.
-    net.metric.t = 1/30
-    net.metric.dt = 0
-
+    
 function net.startServer(...)
     local arg = {...}
     local ip = arg[1] or "*"
@@ -50,6 +118,7 @@ function net.startServer(...)
     
     -- Client connected
     net.server.handle:on("connect", function(data, client)
+            print(client:getConnectId())
             net.server.peer[client:getIndex()] = {connected = true}
             local player_data = {
                 vec = ship.vec,
@@ -246,66 +315,4 @@ function net.serverUpdate(dt)
     end
 
 end
-
--- HELPERS
-function net:buildPlayerPacket()
-    -- Build a data packet to send out. Compare real data to a client copy to see if it needs to be sent to the server.
-    -- Tables are a special case and must contain a ".changed" indice with a boolean value. Flip this when data should be sent.
-    local data = {}
-    local vec = net.compareData(ship.vec, nil) -- This is a table, it doesn't compare to a client copy.
-    local dir = net.compareData(ship.dir, self.player_data.dir)
-    local thrust = net.compareData(ship.thrust, self.player_data.thrust)
-
-    if vec then
-        data.vec = vec
-    end
-
-    if dir then
-        data.dir = dir
-        self.player_data.dir = dir
-    end
-    if thrust then
-        data.thrust = thrust
-        self.player_data.thrust = thrust
-    end
-    return data
-end
-
-function net.buildClientPacket()
-    local data = {}
-    
-end
-
-function net.compareData(d1, d2)
-    if type(d1) == "table" then
-        return d1.changed and d1 or false
-    end
-    
-    return (d1 ~= d2) and d1
-end
-
-
-function net.isIP(ip)
-    if not ip or type(ip) ~= "string" then return false end
-    local a,b,c,d=ip:match("^(%d%d?%d?)%.(%d%d?%d?)%.(%d%d?%d?)%.(%d%d?%d?)$")
-    a=tonumber(a)
-    b=tonumber(b)
-    c=tonumber(c)
-    d=tonumber(d)
-    if not a or not b or not c or not d then return false end
-    if a<0 or 255<a then return false end
-    if b<0 or 255<b then return false end
-    if c<0 or 255<c then return false end
-    if d<0 or 255<d then return false end
-    return true
-end
-
-function net.isPort(port)
-    if port < 49152 or port > 65535 then
-        print("Port "..port.." is out of range (49152-65536)\nWill not bind host. Try a different port number.")
-        return false
-    end
-    return true
-end
-
-return net
+]]

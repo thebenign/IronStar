@@ -1,5 +1,6 @@
 require "slam"
 sock = require "sock"
+socket = require "socket"
 
 DEVMODE = false
 
@@ -9,8 +10,8 @@ function love.load(arg)
     
     local x, y = love.window.getDesktopDimensions()
     
-    love.window.setMode(x, y, {resizable=true})
-    love.window.maximize()
+    love.window.setMode(900, 720, {resizable=true})
+    --love.window.maximize()
         -- GLOBALS
     lg = love.graphics
     
@@ -80,8 +81,8 @@ function love.load(arg)
     
     
     window = {}
-        window.w = 800
-        window.h = 700
+        window.w = 640
+        window.h = 480
         
     star.pop()
     
@@ -93,24 +94,26 @@ end
 function love.update(dt)
     world.timer.dt = world.timer.dt + dt
     gui.play_menu()
-    net.clientUpdate(dt)
-    net.serverUpdate(dt)
+    
+    net.client.update(dt)
+    net.server.update(dt)
 
     if world.timer.dt > world.timer.t then
-
         -- game logic
-            local step_timer_start = love.timer.getTime()
+        
+        local step_timer_start = love.timer.getTime()
         keyhandle()
+        
         collision.mapCheck(main_map, ship.circle)
-        
-        
         ship.update()
+        camera.update()
+        
         
         bullet.update()
         
         timer.tick()
-        
         ship.part:update()
+        ship.part2:update()
         
         local step_timer_end = love.timer.getTime() - step_timer_start
         step_timer.i = step_timer.i + 1
@@ -127,15 +130,6 @@ function love.update(dt)
             step_timer.val = {}
         end
         
-        --[[ This code is dumb
-        if math.sqrt((ship.vec.x-world.r)^2 + (ship.vec.y-world.r)^2) > world.r then
-            --ship.vec:step(
-            local dir = math.atan2(ship.vec.y-world.r, ship.vec.x-world.r)
-            ship.vec.x = ship.vec.x + cos(dir-math.pi)*(math.sqrt((ship.vec.x-world.r)^2 + (ship.vec.y-world.r)^2)-world.r)
-            ship.vec.y = ship.vec.y + sin(dir-math.pi)*(math.sqrt((ship.vec.x-world.r)^2 + (ship.vec.y-world.r)^2)-world.r)
-            --ship.vec.mag = 0
-            
-        end]]
         
         world.timer.dt = world.timer.dt - world.timer.t
     end
@@ -156,7 +150,7 @@ end
 function love.draw()
     lg.setColor(255,255,255,255)
     --star.draw()
-    lg.draw(gfx.img_bg, -(ship.vec.x/world.w)*1280, -(ship.vec.y/world.h)*720)
+    lg.draw(gfx.img_bg, -((camera.x+window.w*.5)/(2520+1600))*window.w, -(ship.vec.y/(world.h+window.h))*window.h)
     --lg.draw(gfx.bg, -camera.x, -camera.y)
     main_map:draw()
     lg.setLineWidth(6)
@@ -164,18 +158,19 @@ function love.draw()
     lg.rectangle("line", 0-camera.x, 0-camera.y, world.w, world.h)
     lg.setColor(255,255,255)
     
-    if net.server.state then
-        net.serverDrawOthers()
+    if net.server.live then
+        net.server.drawOthers()
     end
-    if net.client.state then
-        net.clientDrawOthers()
+    if net.client.live then
+        net.client.drawOthers()
     end
     
     
-    ship.part:draw()
+    
     bullet.draw()
     ship.draw()
-    
+    ship.part:draw()
+    ship.part2:draw()
     --Player tag
     lg.setColor(128,128,128,80)
     lg.rectangle("fill",ship.vec.x-camera.x-font.main:getWidth(world.name)/2-4, ship.vec.y-camera.y-78, font.main:getWidth(world.name)+8, 30, 4,4)
@@ -188,18 +183,22 @@ function love.draw()
     gui.server:draw()
     lg.setColor(255,255,255,255)
     love.graphics.print(love.timer.getFPS(), 0,0)
+    love.graphics.print(camera.x, 0,200)
     if step_timer.result*1000 > 16.66 then love.graphics.setColor(255,20,20) end
     love.graphics.print("Logic step ms: "..string.format("%.4f",(step_timer.result or 0)*1000), 0, love.graphics.getHeight()-32)
     camera.draw()
 end
 
 function love.resize(w, h)
+    
     local x, y = love.graphics.getDimensions()
-    print(x, y)
-    love.window.setMode(x,y,{x=0,y=0,vsync=true})
+    if not initial_resize then
+        love.window.setMode(x,y,{x=0,y=0,vsync=true,resizable=true})
+    end
+    
     
     window.w, window.h = x, y
-    
+    initial_resize = true
 end
 
 function HSL(h, s, l, a)

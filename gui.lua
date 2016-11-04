@@ -40,18 +40,18 @@ function gui.play_menu()
     suit.Input(world.port_input, {font=world.small_font}, suit.layout:col(50, 30))
     
     if suit.Button("Go",{font=world.small_font, color = gui.go_button_color}, suit.layout:col(30, 30)).hit then
-        net.startClient(world.ip_input.text, world.port_input.text)
+        net.client.start(world.ip_input.text, world.port_input.text)
     end
     suit.layout:pop()
 
-    local handle
-    if net.client.handle then handle = net.client.handle:getState() end
+    local host
+    if net.client.host then host = net.client.host:getState() end
     
-    suit.Button("Status: "..tostring(handle),{font=world.small_font,color=gui.status_color}, suit.layout:row(140, 30))
+    suit.Button("Status: "..tostring(host),{font=world.small_font,color=gui.status_color}, suit.layout:row(140, 30))
     
     if suit.Button("Disconnect", {font=world.small_font, color=gui.stop_button_color}, suit.layout:col(84, 30)).hit then
-        if net.client.state then
-            net.clientClose()
+        if net.client.live then
+            net.client.stop()
         end
         
     end
@@ -61,7 +61,7 @@ function gui.play_menu()
     
     --local server = suit.new()
     local server_text
-    if net.server.state then
+    if net.server.live then
         server_text = "Stop Server"
     else
         server_text = "Start server"
@@ -69,17 +69,27 @@ function gui.play_menu()
     
     gui.server.layout:reset(love.graphics.getWidth()-232,32, 4)
     if gui.server:Button(server_text, {font=world.small_font}, gui.server.layout:row(200, 30)).hit then
-        if net.server.state then
-            net.stopServer()
+        if net.server.live then
+            net.server.stop()
         else
-            net.startServer()
+            net.server.start()
         end
         
     end
-    if net.server.state then
+    if net.server.live then
         
         gui.server:Button("\n Server Status", {font=world.small_font, align="left",valign="top"}, gui.server.layout:row(200, 200))
         
+        if net.server.info then
+            gui.server.layout:push(gui.server.layout._x,gui.server.layout._y+32)
+            for k, v in pairs(net.server.info) do
+                gui.server:Label(k..v, {font=world.small_font, align="left"}, gui.server.layout:row(200, 16))
+            end
+            gui.server.layout:pop()
+        end
+        
+        
+        --[[
         if net.server.info then
             gui.server.layout:push(gui.server.layout._x,gui.server.layout._y+32)
             gui.server:Label(" Connected clients: "..net.server.info[1],{font=world.small_font, align="left"}, gui.server.layout:row(200, 16))
@@ -94,7 +104,7 @@ function gui.play_menu()
             end
             
             gui.server.layout:pop()
-        end
+        end]]
 
     end
     

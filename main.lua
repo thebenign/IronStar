@@ -69,7 +69,7 @@ function love.load(arg)
         world.r = (world.w/2)
         world.name = "Scout"
         world.small_font = love.graphics.newFont(12)
-        world.ip_input = {text = "localhost"}
+        world.ip_input = {text = "70.117.86.47"}
         world.port_input = {text = "22122"}
     
     step_timer = {
